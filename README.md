@@ -8,7 +8,7 @@ times as the window needs, and moves it by one list's length, round and
 round. No dependencies.
 
 ```sh
-npm install github:omisilli/marquee#v1.0.0
+npm install github:omisilli/marquee#v1.1.0
 ```
 
 ```ts
@@ -21,9 +21,9 @@ initMarquee(); // every marquee on the page, those rendered later too
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/index.css" />
 <script type="module">
-    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/dist/index.js";
+    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/dist/index.js";
     initMarquee();
 </script>
 ```
@@ -109,6 +109,11 @@ paint, before the script has looked.
 
 - **Focus inside stops it** — Tab to a link in it and it stands still, to
   be read and pressed; out again, it goes on.
+- **A group stops together:** `data-pg-marquee-group` on what holds several
+  — three columns of testimonials — and the mouse anywhere over it, or
+  focus in it, stops every marquee inside, not just the one under the
+  mouse. A toggle whose `aria-controls` names the group stops and starts
+  them all.
 - **A button stops it:** `data-pg-marquee-toggle` with `aria-controls`
   naming the window. It gets `aria-pressed="true"` while stopped, the
   window `data-pg-marquee-paused`. Anything moving for more than five
@@ -148,10 +153,11 @@ contained: it takes its height from the site.
 | `data-pg-marquee` | the window | What shows |
 | `data-pg-marquee-track` | inside it | What moves; holds the list alone |
 | `data-pg-marquee-list` | in the track | The items, once |
-| `data-pg-marquee-toggle` | a button, `aria-controls` | Stop / go on |
+| `data-pg-marquee-toggle` | a button, `aria-controls` | Stop / go on — a marquee, or every one in the element named |
+| `data-pg-marquee-group` | a parent | The mouse over it, or focus in it, stops every marquee inside |
 | `data-pg-marquee-next`, `-prev` | buttons, `aria-controls` | Step: the next item, the one before |
 | `data-pg-marquee-axis` | the window | `x` or `y` — written by the script; write `y` in the markup for a column |
-| `data-pg-marquee-copy` | the copies | Written by the script: `aria-hidden`, `inert`, no ids |
+| `data-pg-marquee-copy` | the copies | Written by the script: `aria-hidden`, out of the Tab order, no ids — the mouse can press their links |
 | `data-pg-marquee-fits` | the window | Overflow: the list fits — still |
 | `data-pg-marquee-paused` | the window | Stopped by its button |
 | `data-pg-marquee-ready` | the window | The script has looked |
@@ -170,6 +176,11 @@ export function MarqueeInit() {
 }
 ```
 
+The copies are hidden from screen readers and the Tab key — the list is
+read once — but on the screen they are as real as the list: a card's link
+in a copy is pressed with the mouse like the list's. A press on a copy
+puts no focus in it.
+
 Mount it once, high in the tree. The list is never moved or changed —
 React's markup stays as React wrote it; the copies go in the track beside
 it, and a change to the list (new items, a new label) is copied again.
@@ -184,6 +195,7 @@ only the newest call answers. See
 announcement bar with its stop button (`?speed`, `?dir`, `?hover`,
 `?fade`, `?phone=still`), deals one at a time with arrows (`?steps=left`,
 `?hold`), two rows of logos the opposite ways, testimonials in columns
-going up and down, product titles that move only when they do not fit,
+going up and down — one at a time or all three together (`?group=on`),
+each card with a link — product titles that move only when they do not fit,
 and two bands crossing that race with the page's scroll (`?scroll`,
 `?turn=keep`) — with the browser's own scroll or Lenis (`?lenis`).

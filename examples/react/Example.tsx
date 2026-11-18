@@ -117,12 +117,34 @@ export function TestimonialColumn({ quotes, direction = "up", speed = 30 }: { qu
                     {quotes.map((q) => (
                         <figure key={q.name} className="card">
                             <blockquote>{q.text}</blockquote>
+                            {/* In a copy too, pressed with the mouse like this one. */}
+                            <a href="https://www.google.com" target="_blank" rel="noopener">
+                                See the order →
+                            </a>
                             <figcaption>{q.name}</figcaption>
                         </figure>
                     ))}
                 </div>
             </div>
         </div>
+    );
+}
+
+/* Several columns stopping together: data-pg-marquee-group on what holds
+   them — the mouse over any, or focus in any, stops them all; a toggle
+   naming the group stops and starts them all. */
+export function TestimonialColumns({ columns }: { columns: { text: string; name: string }[][] }) {
+    return (
+        <>
+            <button type="button" data-pg-marquee-toggle aria-controls="testimonials" aria-pressed="false">
+                Stop all
+            </button>
+            <div id="testimonials" data-pg-marquee-group style={{ display: "grid", gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))`, gap: "1rem" }}>
+                {columns.map((quotes, i) => (
+                    <TestimonialColumn key={i} quotes={quotes} direction={i % 2 ? "down" : "up"} speed={22 + i * 8} />
+                ))}
+            </div>
+        </>
     );
 }
 
@@ -144,7 +166,7 @@ export function CrossingBands({ one, two }: { one: string[]; two: string[] }) {
     const band = (words: string[], turn: string, direction: "left" | "right") => (
         <div
             data-pg-marquee
-            style={{ gridArea: "1 / 1", width: "120vw", transform: `rotate(${turn})`, "--pg-marquee-direction": direction, "--pg-marquee-scroll": 0.2, "--pg-marquee-hover": "none", "--pg-marquee-speed": 60 } as Vars}
+            style={{ position: "absolute", top: "50%", left: "-50vw", right: "-50vw", translate: "0 -50%", rotate: turn, "--pg-marquee-direction": direction, "--pg-marquee-scroll": 0.2, "--pg-marquee-hover": "none", "--pg-marquee-speed": 60 } as Vars}
         >
             <div data-pg-marquee-track>
                 <ul data-pg-marquee-list>
@@ -155,8 +177,10 @@ export function CrossingBands({ one, two }: { one: string[]; two: string[] }) {
             </div>
         </div>
     );
+    // Half a screen longer than the page on each side: turned, their ends
+    // never come into sight. The crossing clips them at the page's edge.
     return (
-        <div style={{ display: "grid", placeItems: "center", height: "26rem", overflow: "clip" }}>
+        <div style={{ position: "relative", height: "26rem", overflow: "clip" }}>
             {band(one, "-4deg", "left")}
             {band(two, "3deg", "right")}
         </div>

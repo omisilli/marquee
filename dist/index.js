@@ -14,8 +14,9 @@
  * This file copies the list beside itself, as many times as the window
  * needs to be full while it moves, and moves the track by one list's
  * length, round and round: where it starts again looks just like where it
- * was. The copies are hidden from screen readers and keys (aria-hidden,
- * inert) and carry no ids. The list itself is never touched: React's
+ * was. The copies are hidden from screen readers (aria-hidden) and out of
+ * the Tab order, and carry no ids — but the mouse can press a link in
+ * one: on the screen it is as real as the list's. The list itself is never touched: React's
  * markup stays as React wrote it — render the track with the list alone
  * in it.
  *
@@ -42,7 +43,11 @@
  *   --pg-marquee-gap, --pg-marquee-fade — index.css's.
  *
  * Focus inside it always stops it, so a link can be read and pressed. Out
- * of sight it stops, and goes on where it was. With reduced motion asked
+ * of sight it stops, and goes on where it was.
+ *
+ * data-pg-marquee-group on any parent: the mouse over it, or focus in it,
+ * stops every marquee inside — columns of testimonials stand still
+ * together; a toggle naming the group stops them all. With reduced motion asked
  * for it stands still, no copies.
  *
  * Buttons, anywhere, naming the window with aria-controls:
@@ -61,6 +66,7 @@ const AXIS = "data-pg-marquee-axis";
 const FITS = "data-pg-marquee-fits";
 const PAUSED = "data-pg-marquee-paused";
 const READY = "data-pg-marquee-ready";
+const GROUP = "data-pg-marquee-group";
 const TOGGLE = "data-pg-marquee-toggle";
 const NEXT = "data-pg-marquee-next";
 const PREV = "data-pg-marquee-prev";
@@ -126,14 +132,20 @@ function partsOf(root) {
     return track && list ? { track, list } : null;
 }
 /* ---------- Copies ---------- */
+/* What Tab would stop on. */
+const FOCUSABLE = "a[href], area[href], button, input, select, textarea, iframe, summary, [tabindex], [contenteditable]";
+/* A copy: for screen readers and the Tab key it is not there — once is
+   enough — but on the screen it is, and the mouse can press its links. */
 function copyOf(list) {
     const copy = list.cloneNode(true);
     [copy, ...copy.querySelectorAll("[id]")].forEach((el) => el.removeAttribute("id"));
+    copy.querySelectorAll(FOCUSABLE).forEach((el) => el.setAttribute("tabindex", "-1"));
     copy.setAttribute(COPY, "");
     copy.setAttribute("aria-hidden", "true");
-    copy.inert = true;
     return copy;
 }
+/* Where the mouse or focus stops it: the window, or the group it is in. */
+const reach = (m) => m.root.closest(`[${GROUP}]`) ?? m.root;
 function clear(m) {
     m.flow?.cancel();
     m.flow = null;
@@ -440,7 +452,7 @@ export function initMarquee() {
         // Out of the window altogether: over nothing.
         const over = event.type === "pointerout" ? event.relatedTarget : event.target;
         marquees.forEach((m) => {
-            const under = over instanceof Node && m.root.contains(over);
+            const under = over instanceof Node && reach(m).contains(over);
             if (under === m.under)
                 return;
             m.under = under;
@@ -452,7 +464,7 @@ export function initMarquee() {
         if (live !== self)
             return;
         marquees.forEach((m) => {
-            const focused = m.root.contains(document.activeElement);
+            const focused = reach(m).contains(document.activeElement);
             if (focused === m.focused)
                 return;
             m.focused = focused;
@@ -460,29 +472,48 @@ export function initMarquee() {
             wait(m);
         });
     };
-    // Its buttons, by aria-controls.
+    // Its buttons, by aria-controls: a marquee, or anything holding some —
+    // a group — whose marquees a toggle stops and starts together.
     const onClick = (event) => {
         if (live !== self || !(event.target instanceof Element))
             return;
         const button = event.target.closest(`[${TOGGLE}], [${NEXT}], [${PREV}]`);
-        const id = button?.getAttribute("aria-controls");
-        const root = id ? document.getElementById(id) : null;
-        const m = root ? marquees.get(root) : marqueeOf(button);
-        if (!button || !m)
+        if (!button)
+            return;
+        const id = button.getAttribute("aria-controls");
+        const named = id ? document.getElementById(id) : null;
+        const targets = named
+            ? [...marquees.values()].filter((m) => m.root === named || named.contains(m.root))
+            : [marqueeOf(button)].filter((m) => !!m);
+        if (!targets.length)
             return;
         if (button.hasAttribute(TOGGLE)) {
-            m.paused = !m.paused;
-            m.root.toggleAttribute(PAUSED, m.paused);
-            document.querySelectorAll(`[${TOGGLE}][aria-controls="${m.root.id}"]`).forEach((b) => b.setAttribute("aria-pressed", String(m.paused)));
-            if (!m.root.id)
-                button.setAttribute("aria-pressed", String(m.paused));
-            sight(m);
-            pace(m);
-            wait(m);
+            const paused = !targets.every((m) => m.paused);
+            targets.forEach((m) => {
+                m.paused = paused;
+                m.root.toggleAttribute(PAUSED, paused);
+                sight(m);
+                pace(m);
+                wait(m);
+            });
+            const sameId = id ? document.querySelectorAll(`[${TOGGLE}][aria-controls="${CSS.escape(id)}"]`) : [button];
+            sameId.forEach((b) => b.setAttribute("aria-pressed", String(paused)));
         }
-        else if (m.settings.mode === "step" && !m.still) {
-            step(m, button.hasAttribute(NEXT) === sense(m) < 0 ? 1 : -1);
+        else {
+            const m = targets[0];
+            if (m.settings.mode === "step" && !m.still)
+                step(m, button.hasAttribute(NEXT) === sense(m) < 0 ? 1 : -1);
         }
+    };
+    // A press on a copy's link: no focus on it — a copy is hidden from
+    // screen readers, and focus inside it would be lost to them. The click
+    // itself goes through.
+    const onDown = (event) => {
+        if (live !== self || !(event.target instanceof Element))
+            return;
+        const hit = event.target.closest(FOCUSABLE);
+        if (hit && hit.closest(`[${COPY}]`))
+            event.preventDefault();
     };
     const onScroll = () => {
         if (live === self)
@@ -499,6 +530,7 @@ export function initMarquee() {
     document.addEventListener("focusin", onFocus);
     document.addEventListener("focusout", onBlur);
     document.addEventListener("click", onClick);
+    document.addEventListener("mousedown", onDown);
     addEventListener("scroll", onScroll, { passive: true });
     addEventListener("resize", schedule);
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
@@ -519,6 +551,7 @@ export function initMarquee() {
         document.removeEventListener("focusin", onFocus);
         document.removeEventListener("focusout", onBlur);
         document.removeEventListener("click", onClick);
+        document.removeEventListener("mousedown", onDown);
         removeEventListener("scroll", onScroll);
         removeEventListener("resize", schedule);
         motion.removeEventListener?.("change", schedule);

@@ -3,13 +3,14 @@
      release, so the page and the code always match. Each section shows one
      side of the package; the switches are links, and each keeps the
      others: ?speed, ?dir, ?hover, ?fade, ?phone (the bar); ?hold, ?steps
-     (one at a time); ?scroll, ?turn (with the page's scroll); ?lenis. -->
+     (one at a time); ?group (the columns); ?scroll, ?turn (with the page's
+     scroll); ?lenis. -->
 <html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>marquee — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -114,6 +115,10 @@
                 border-radius: 0.6rem;
                 background: var(--surface);
                 cursor: pointer;
+            }
+            .row [data-pg-marquee-toggle][aria-pressed="true"] {
+                background: var(--fg);
+                color: var(--bg);
             }
             .row [aria-current="true"] {
                 background: var(--fg);
@@ -303,6 +308,19 @@
                 background: var(--surface);
                 font-size: 0.9rem;
             }
+            .card-link {
+                display: inline-block;
+                margin-top: 0.75rem;
+                padding: 0.35rem 0.8rem;
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                font-size: 0.8rem;
+                font-weight: 600;
+                text-decoration: none;
+            }
+            .card-link:hover {
+                border-color: var(--fg);
+            }
             .card footer {
                 display: flex;
                 align-items: center;
@@ -376,17 +394,20 @@
             }
 
             /* 6 · With the page's scroll: two bands crossing, big words. */
+            /* The bands are half a screen longer than the page on each side,
+               so turned a few degrees their ends never come into sight —
+               on a phone too. The crossing clips them at the page's edge. */
             .crossing {
                 position: relative;
-                display: grid;
-                place-items: center;
                 height: 26rem;
-                margin-inline: calc(50% - 50vw);
                 overflow: clip;
             }
             .band {
-                grid-area: 1 / 1;
-                width: 120vw;
+                position: absolute;
+                top: 50%;
+                left: -50vw;
+                right: -50vw;
+                translate: 0 -50%;
                 padding-block: 1rem;
                 --pg-marquee-speed: 60;
                 --pg-marquee-gap: 2.5rem;
@@ -580,33 +601,46 @@
                     <code>--pg-marquee-direction: up</code> or <code>down</code>, each column its own speed. Going up
                     or down the window needs a height, the site's — here 28rem — and is best written with
                     <code>data-pg-marquee-axis="y"</code> already, so it is a column from the first paint. Below
-                    48rem, one column.
+                    48rem, one column. Mouse over a card and press its link: the copies are pressed as the list is.
                 </p>
-                <div class="columns">
+                <p>
+                    Under the mouse, the column stops — or all three: <code>data-pg-marquee-group</code> on what holds
+                    them, and the mouse anywhere over it, or focus in it, stops every marquee inside. A toggle naming
+                    the group stops and starts them all.
+                </p>
+                <div class="switches">
+                    <div class="row">
+                        <span>Under the mouse, stops</span>
+                        <a data-key="group" data-value="" href="?">the column</a>
+                        <a data-key="group" data-value="on" href="?">all three (a group)</a>
+                        <button type="button" data-pg-marquee-toggle aria-controls="testimonials" aria-pressed="false">Stop all three</button>
+                    </div>
+                </div>
+                <div class="columns" id="testimonials">
                     <div data-pg-marquee class="up" data-pg-marquee-axis="y">
                         <div data-pg-marquee-track>
                             <div data-pg-marquee-list>
-                                <figure class="card"><blockquote>Delivered the next morning, exactly as pictured. Ordering again.</blockquote><footer><span class="avatar">AK</span><span><b>Ayla K.</b><small>Istanbul</small></span></footer></figure>
-                                <figure class="card"><blockquote>The size guide was right. First time a jacket fits me from the box.</blockquote><footer><span class="avatar">MD</span><span><b>Mert D.</b><small>Izmir</small></span></footer></figure>
-                                <figure class="card"><blockquote>Returned a pair of shoes in two days, no questions. Money back the same week.</blockquote><footer><span class="avatar">SL</span><span><b>Sara L.</b><small>Ankara</small></span></footer></figure>
+                                <figure class="card"><blockquote>Delivered the next morning, exactly as pictured. Ordering again.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">AK</span><span><b>Ayla K.</b><small>Istanbul</small></span></footer></figure>
+                                <figure class="card"><blockquote>The size guide was right. First time a jacket fits me from the box.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">MD</span><span><b>Mert D.</b><small>Izmir</small></span></footer></figure>
+                                <figure class="card"><blockquote>Returned a pair of shoes in two days, no questions. Money back the same week.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">SL</span><span><b>Sara L.</b><small>Ankara</small></span></footer></figure>
                             </div>
                         </div>
                     </div>
                     <div data-pg-marquee class="down" data-pg-marquee-axis="y">
                         <div data-pg-marquee-track>
                             <div data-pg-marquee-list>
-                                <figure class="card"><blockquote>Wrapped as a gift without my asking. Lovely touch.</blockquote><footer><span class="avatar">EB</span><span><b>Emre B.</b><small>Bursa</small></span></footer></figure>
-                                <figure class="card"><blockquote>Support answered on a Sunday evening. Problem solved in ten minutes.</blockquote><footer><span class="avatar">ZT</span><span><b>Zeynep T.</b><small>Antalya</small></span></footer></figure>
-                                <figure class="card"><blockquote>Better quality than the shops in town, for less.</blockquote><footer><span class="avatar">CY</span><span><b>Can Y.</b><small>Eskişehir</small></span></footer></figure>
+                                <figure class="card"><blockquote>Wrapped as a gift without my asking. Lovely touch.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">EB</span><span><b>Emre B.</b><small>Bursa</small></span></footer></figure>
+                                <figure class="card"><blockquote>Support answered on a Sunday evening. Problem solved in ten minutes.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">ZT</span><span><b>Zeynep T.</b><small>Antalya</small></span></footer></figure>
+                                <figure class="card"><blockquote>Better quality than the shops in town, for less.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">CY</span><span><b>Can Y.</b><small>Eskişehir</small></span></footer></figure>
                             </div>
                         </div>
                     </div>
                     <div data-pg-marquee class="up" data-pg-marquee-axis="y" style="--pg-marquee-speed: 38">
                         <div data-pg-marquee-track>
                             <div data-pg-marquee-list>
-                                <figure class="card"><blockquote>The colours are just as on the screen. Rare.</blockquote><footer><span class="avatar">DN</span><span><b>Deniz N.</b><small>Trabzon</small></span></footer></figure>
-                                <figure class="card"><blockquote>Paid in instalments, no fuss. Arrived before the weekend.</blockquote><footer><span class="avatar">HS</span><span><b>Hakan S.</b><small>Konya</small></span></footer></figure>
-                                <figure class="card"><blockquote>Third order this year. Never a wrong item.</blockquote><footer><span class="avatar">IP</span><span><b>Irem P.</b><small>Adana</small></span></footer></figure>
+                                <figure class="card"><blockquote>The colours are just as on the screen. Rare.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">DN</span><span><b>Deniz N.</b><small>Trabzon</small></span></footer></figure>
+                                <figure class="card"><blockquote>Paid in instalments, no fuss. Arrived before the weekend.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">HS</span><span><b>Hakan S.</b><small>Konya</small></span></footer></figure>
+                                <figure class="card"><blockquote>Third order this year. Never a wrong item.</blockquote><a class="card-link" href="https://www.google.com" target="_blank" rel="noopener">See the order →</a><footer><span class="avatar">IP</span><span><b>Irem P.</b><small>Adana</small></span></footer></figure>
                             </div>
                         </div>
                     </div>
@@ -733,6 +767,7 @@
                     deals.setAttribute("data-pg-marquee-axis", "x");
                 }
                 if (query.get("hold")) set(deals, "--pg-marquee-hold", query.get("hold") + "s");
+                if (query.get("group") === "on") document.getElementById("testimonials").setAttribute("data-pg-marquee-group", "");
 
                 var scroll = query.has("scroll") ? query.get("scroll") : "0.2";
                 document.querySelectorAll(".band").forEach(function (band) {
@@ -743,7 +778,7 @@
         </script>
 
         <script type="module">
-            import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/dist/index.js";
+            import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/dist/index.js";
 
             const query = new URLSearchParams(location.search);
 

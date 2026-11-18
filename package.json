@@ -1,6 +1,6 @@
 {
     "name": "@plusguard/marquee",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Scrolling strips that loop without a seam: announcement bars, logo rows, testimonial columns. Flows at a set speed in px/s, or steps one item at a time; moves only when it does not fit, if you like; speeds up and turns with the page's scroll. Pauses on hover and focus, stops for reduced motion. No dependencies.",
     "type": "module",
     "main": "./dist/index.js",
