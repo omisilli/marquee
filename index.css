@@ -1,0 +1,60 @@
+/*
+ * marquee — the CSS half: the window that clips, the track and the list in
+ * a row (a column going up or down), the edges fading. Colours, fonts,
+ * the items' own look belong to the site.
+ *
+ * Set on the window or above, per screen size with media queries:
+ *   --pg-marquee-gap    between the items, and between the list and its
+ *                       copies — one gap all the way round (default 2rem)
+ *   --pg-marquee-fade   how far the edges fade out (default 0: no fade)
+ * The rest — --pg-marquee, -direction, -speed, -hold, -duration, -easing,
+ * -hover, -scroll, -turn — index.ts reads; see there or the README.
+ */
+
+/* The window: what shows. Its width comes from its place, never from what
+   moves inside it: the track is as wide as the list and all its copies,
+   and without inline-size containment that width would reach up into a
+   grid or flex parent — a wider window, more copies, wider again.
+   A column (up, down) needs a height of its own — the site's — and is best
+   written with data-pg-marquee-axis="y" from the start. */
+[data-pg-marquee] {
+    overflow: clip;
+    contain: inline-size;
+    --pg-marquee-fade-end: calc(100% - var(--pg-marquee-fade, 0px));
+    mask-image: linear-gradient(to right, transparent, #000 var(--pg-marquee-fade, 0px), #000 var(--pg-marquee-fade-end), transparent);
+}
+[data-pg-marquee][data-pg-marquee-axis="y"] {
+    contain: none;
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--pg-marquee-fade, 0px), #000 var(--pg-marquee-fade-end), transparent);
+}
+
+/* The track — what moves — and the list and its copies in it: one row,
+   as wide as all of them, the same gap everywhere. */
+[data-pg-marquee-track],
+[data-pg-marquee-list] {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--pg-marquee-gap, 2rem);
+}
+[data-pg-marquee-track] {
+    width: max-content;
+}
+[data-pg-marquee-track] > *,
+[data-pg-marquee-list] > * {
+    flex: none;
+}
+[data-pg-marquee-list] {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Up or down: a column, as tall as all of them. */
+[data-pg-marquee-axis="y"] [data-pg-marquee-track],
+[data-pg-marquee-axis="y"] [data-pg-marquee-list] {
+    flex-direction: column;
+}
+[data-pg-marquee-axis="y"] [data-pg-marquee-track] {
+    width: auto;
+    height: max-content;
+}

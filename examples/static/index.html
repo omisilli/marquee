@@ -1,0 +1,777 @@
+<!doctype html>
+<!-- Open by double-clicking: everything loads from jsDelivr, pinned to a
+     release, so the page and the code always match. Each section shows one
+     side of the package; the switches are links, and each keeps the
+     others: ?speed, ?dir, ?hover, ?fade, ?phone (the bar); ?hold, ?steps
+     (one at a time); ?scroll, ?turn (with the page's scroll); ?lenis. -->
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>marquee — example</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/index.css" />
+        <style>
+            :root {
+                --bg: #f6f6f4;
+                --surface: #ffffff;
+                --fg: #18181b;
+                --muted: #6b6b72;
+                --line: #e4e4e0;
+                --red: #ff0033;
+                color-scheme: light dark;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #111113;
+                    --surface: #1b1b1f;
+                    --fg: #ededef;
+                    --muted: #9a9aa3;
+                    --line: #2c2c31;
+                }
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+            }
+            body {
+                font:
+                    16px/1.6 system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+                color: var(--fg);
+                background: var(--bg);
+                overflow-x: clip;
+            }
+            a {
+                color: inherit;
+            }
+            code {
+                font:
+                    0.85em/1.4 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    monospace;
+                padding: 0.15em 0.4em;
+                border-radius: 0.35em;
+                background: color-mix(in srgb, var(--fg) 8%, transparent);
+            }
+            main {
+                max-width: 64rem;
+                margin: 0 auto;
+                padding: 3rem 1.25rem 6rem;
+                display: grid;
+                gap: 4rem;
+            }
+            h1 {
+                font-size: 1.6rem;
+            }
+            h2 {
+                font-size: 1.1rem;
+                margin-bottom: 0.5rem;
+            }
+            section > p,
+            header > p {
+                color: var(--muted);
+                margin-bottom: 1rem;
+                max-width: 46rem;
+            }
+            .label {
+                font-size: 0.75rem;
+                font-weight: 600;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                color: var(--red);
+                margin-bottom: 0.75rem;
+            }
+
+            /* The switches. */
+            .switches {
+                display: grid;
+                gap: 0.6rem;
+                margin-bottom: 1.25rem;
+            }
+            .row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            .row > span {
+                min-width: 9.5rem;
+                font-size: 0.85rem;
+                color: var(--muted);
+            }
+            .row a,
+            .row button {
+                font: inherit;
+                font-size: 0.85rem;
+                color: inherit;
+                text-decoration: none;
+                padding: 0.35rem 0.8rem;
+                border: 1px solid var(--line);
+                border-radius: 0.6rem;
+                background: var(--surface);
+                cursor: pointer;
+            }
+            .row [aria-current="true"] {
+                background: var(--fg);
+                color: var(--bg);
+                border-color: var(--fg);
+            }
+
+            /* 1 · The announcement bar: a dark strip, a ✦ after every item
+               — the last too, so the copies join up with the same mark. */
+            .bar {
+                display: flex;
+                align-items: center;
+                background: #18181b;
+                color: #fff;
+                border-radius: 0.75rem;
+                overflow: clip;
+            }
+            .bar [data-pg-marquee] {
+                flex: 1 1 0%;
+                min-width: 0;
+                padding-block: 0.7rem;
+            }
+            .bar li {
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            .bar li::after {
+                content: "✦";
+                margin-left: var(--pg-marquee-gap, 2rem);
+                color: var(--red);
+            }
+            .bar li a {
+                text-decoration: underline;
+                text-underline-offset: 0.2em;
+            }
+            .stop {
+                flex: none;
+                display: grid;
+                place-items: center;
+                width: 2.75rem;
+                align-self: stretch;
+                border: 0;
+                border-left: 1px solid rgb(255 255 255 / 0.15);
+                background: transparent;
+                color: #fff;
+                cursor: pointer;
+            }
+            .stop svg {
+                width: 1rem;
+                height: 1rem;
+                fill: currentColor;
+            }
+            .stop[aria-pressed="true"] .is-pause,
+            .stop:not([aria-pressed="true"]) .is-play {
+                display: none;
+            }
+            /* ?phone=still: below 48rem it stands still. */
+            @media (max-width: 47.99rem) {
+                .phone-still {
+                    --pg-marquee: none;
+                }
+            }
+
+            /* 2 · One at a time: each message the bar's own size, one after
+               another, held. Going up, the bar needs its height. */
+            .deals {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding-inline: 0.5rem;
+                background: #c8f3ec;
+                color: #0b3b35;
+                border-radius: 0.75rem;
+            }
+            .deals [data-pg-marquee] {
+                flex: 1 1 0%;
+                min-width: 0;
+                height: 2.75rem;
+                --pg-marquee-gap: 0px;
+            }
+            .deals li {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+                height: 2.75rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            .deals [data-pg-marquee-axis="x"] li {
+                width: var(--deals-width, 30rem);
+            }
+            .deals [data-pg-marquee-list] {
+                width: 100%;
+            }
+            .deals [data-pg-marquee-axis="x"] [data-pg-marquee-list] {
+                width: auto;
+            }
+            .deals [data-pg-marquee-axis="y"] [data-pg-marquee-track] {
+                width: 100%;
+            }
+            .deals li a {
+                font-weight: 600;
+            }
+            .deals button {
+                flex: none;
+                display: grid;
+                place-items: center;
+                width: 2rem;
+                height: 2rem;
+                border: 0;
+                border-radius: 50%;
+                background: transparent;
+                color: inherit;
+                cursor: pointer;
+            }
+            .deals button:hover {
+                background: rgb(0 0 0 / 0.08);
+            }
+            .deals svg {
+                width: 1rem;
+                height: 1rem;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            /* 3 · Logos, two rows the opposite ways, the edges fading. */
+            .logos {
+                display: grid;
+                gap: 1.5rem;
+                --pg-marquee-gap: 3.5rem;
+                --pg-marquee-fade: 6rem;
+                --pg-marquee-speed: 40;
+            }
+            .logos li {
+                font:
+                    800 1.6rem/1 system-ui,
+                    sans-serif;
+                letter-spacing: -0.03em;
+                color: color-mix(in srgb, var(--fg) 55%, transparent);
+                white-space: nowrap;
+            }
+            .logos li:nth-child(3n + 2) {
+                font-family: Georgia, serif;
+                font-style: italic;
+                font-weight: 600;
+            }
+            .logos li:nth-child(3n) {
+                font-family: ui-monospace, Menlo, monospace;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                font-size: 1.2rem;
+            }
+            .logos .reverse {
+                --pg-marquee-direction: right;
+            }
+
+            /* 4 · Testimonials in columns, going up and down. */
+            .columns {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 1rem;
+                --pg-marquee-gap: 1rem;
+                --pg-marquee-fade: 4rem;
+            }
+            .columns [data-pg-marquee] {
+                height: 28rem;
+            }
+            .columns .down {
+                --pg-marquee-direction: down;
+                --pg-marquee-speed: 22;
+            }
+            .columns .up {
+                --pg-marquee-direction: up;
+                --pg-marquee-speed: 30;
+            }
+            .card {
+                padding: 1.25rem;
+                border: 1px solid var(--line);
+                border-radius: 1rem;
+                background: var(--surface);
+                font-size: 0.9rem;
+            }
+            .card footer {
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                margin-top: 0.9rem;
+            }
+            .card b {
+                display: block;
+                font-size: 0.85rem;
+            }
+            .card small {
+                color: var(--muted);
+            }
+            .avatar {
+                flex: none;
+                display: grid;
+                place-items: center;
+                width: 2.25rem;
+                height: 2.25rem;
+                border-radius: 50%;
+                background: color-mix(in srgb, var(--red) 15%, var(--surface));
+                color: var(--red);
+                font-weight: 700;
+                font-size: 0.8rem;
+            }
+            /* Below 48rem: one column — the others away. */
+            @media (max-width: 47.99rem) {
+                .columns {
+                    grid-template-columns: minmax(0, 1fr);
+                }
+                .columns > :nth-child(n + 2) {
+                    display: none;
+                }
+            }
+
+            /* 5 · Only when it does not fit: product cards, the title in one
+               line; a title that fits stands still. */
+            .products {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+                gap: 1rem;
+            }
+            .product {
+                border: 1px solid var(--line);
+                border-radius: 1rem;
+                background: var(--surface);
+                overflow: clip;
+            }
+            .product .picture {
+                aspect-ratio: 4 / 3;
+                background: color-mix(in srgb, var(--fg) 7%, var(--surface));
+            }
+            .product .text {
+                padding: 0.9rem 1rem 1rem;
+            }
+            .product [data-pg-marquee] {
+                --pg-marquee: overflow;
+                --pg-marquee-speed: 35;
+                --pg-marquee-gap: 2.5rem;
+                --pg-marquee-hover: none;
+                font-weight: 600;
+                white-space: nowrap;
+            }
+            .product [data-pg-marquee]:not([data-pg-marquee-fits]) {
+                --pg-marquee-fade: 1.5rem;
+            }
+            .product .price {
+                margin-top: 0.3rem;
+                color: var(--muted);
+                font-size: 0.9rem;
+            }
+
+            /* 6 · With the page's scroll: two bands crossing, big words. */
+            .crossing {
+                position: relative;
+                display: grid;
+                place-items: center;
+                height: 26rem;
+                margin-inline: calc(50% - 50vw);
+                overflow: clip;
+            }
+            .band {
+                grid-area: 1 / 1;
+                width: 120vw;
+                padding-block: 1rem;
+                --pg-marquee-speed: 60;
+                --pg-marquee-gap: 2.5rem;
+                --pg-marquee-hover: none;
+            }
+            .band.one {
+                background: var(--red);
+                color: #fff;
+                transform: rotate(-4deg);
+            }
+            .band.two {
+                background: var(--fg);
+                color: var(--bg);
+                transform: rotate(3deg);
+                --pg-marquee-direction: right;
+            }
+            .band li {
+                font:
+                    900 clamp(1.8rem, 5vw, 3.4rem) / 1 system-ui,
+                    sans-serif;
+                letter-spacing: -0.02em;
+                text-transform: uppercase;
+                white-space: nowrap;
+            }
+            .band li::after {
+                content: "✦";
+                margin-left: var(--pg-marquee-gap);
+            }
+            .tall {
+                height: 70vh;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <header>
+                <h1>marquee</h1>
+                <p>
+                    A strip that scrolls round without a seam. The list is written once; the package copies it
+                    beside itself, as many times as the window needs, and moves it by one list's length, round
+                    and round. Mouse over one: it slows to a stop. Tab into one: it stops, so a link can be read.
+                    No dependencies.
+                </p>
+                <div class="row">
+                    <a id="lenis-off" href="?">The browser's own scroll</a>
+                    <a id="lenis-on" href="?lenis">With Lenis</a>
+                </div>
+            </header>
+
+            <!-- 1 · The announcement bar -->
+            <section>
+                <p class="label">1 · Flow — the announcement bar</p>
+                <h2>Round and round, at a speed in px a second</h2>
+                <p>
+                    <code>--pg-marquee-speed</code> is px a second, not a time: a longer list goes round at the same
+                    speed. <code>--pg-marquee-hover</code>: under the mouse it pauses, slows, or goes on. The button
+                    at the end stops it and goes on — anything with <code>data-pg-marquee-toggle</code> and
+                    <code>aria-controls</code>; moving for more than five seconds, a strip should have one.
+                </p>
+                <div class="switches">
+                    <div class="row">
+                        <span>Speed</span>
+                        <a data-key="speed" data-value="" href="?">50 px/s</a>
+                        <a data-key="speed" data-value="25" href="?">25</a>
+                        <a data-key="speed" data-value="120" href="?">120</a>
+                    </div>
+                    <div class="row">
+                        <span>Direction</span>
+                        <a data-key="dir" data-value="" href="?">left</a>
+                        <a data-key="dir" data-value="right" href="?">right</a>
+                    </div>
+                    <div class="row">
+                        <span>Under the mouse</span>
+                        <a data-key="hover" data-value="" href="?">pause</a>
+                        <a data-key="hover" data-value="slow" href="?">slow</a>
+                        <a data-key="hover" data-value="none" href="?">none</a>
+                    </div>
+                    <div class="row">
+                        <span>Edges</span>
+                        <a data-key="fade" data-value="" href="?">sharp</a>
+                        <a data-key="fade" data-value="3" href="?">fade 3rem</a>
+                    </div>
+                    <div class="row">
+                        <span>On a phone</span>
+                        <a data-key="phone" data-value="" href="?">flows</a>
+                        <a data-key="phone" data-value="still" href="?">still (--pg-marquee: none)</a>
+                    </div>
+                </div>
+                <div class="bar">
+                    <div data-pg-marquee id="promo">
+                        <div data-pg-marquee-track>
+                            <ul data-pg-marquee-list>
+                                <li>Free delivery over $50</li>
+                                <li>New season — <a href="#deals">30% off</a></li>
+                                <li>Returns free for 60 days</li>
+                                <li>Order by 3 pm, at your door tomorrow</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="button" class="stop" data-pg-marquee-toggle aria-controls="promo" aria-pressed="false" aria-label="Stop the announcements">
+                        <svg class="is-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3h3v10H4zM9 3h3v10H9z" /></svg>
+                        <svg class="is-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" /></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 2 · One at a time -->
+            <section id="deals">
+                <p class="label">2 · Step — one at a time</p>
+                <h2>Each item comes, stays, and the next takes its place</h2>
+                <p>
+                    <code>--pg-marquee: step</code>. An item stays <code>--pg-marquee-hold</code>, the move takes
+                    <code>--pg-marquee-duration</code> on <code>--pg-marquee-easing</code>. Up, each message the
+                    bar's own size; or left, side by side. The arrows are <code>data-pg-marquee-prev</code> and
+                    <code>-next</code>; under the mouse it waits.
+                </p>
+                <div class="switches">
+                    <div class="row">
+                        <span>Comes from</span>
+                        <a data-key="steps" data-value="" href="?">below (up)</a>
+                        <a data-key="steps" data-value="left" href="?">the right (left)</a>
+                    </div>
+                    <div class="row">
+                        <span>Each stays</span>
+                        <a data-key="hold" data-value="" href="?">3s</a>
+                        <a data-key="hold" data-value="1.5" href="?">1.5s</a>
+                        <a data-key="hold" data-value="6" href="?">6s</a>
+                    </div>
+                </div>
+                <div class="deals">
+                    <button type="button" data-pg-marquee-prev aria-controls="deals-strip" aria-label="The deal before">
+                        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5" /></svg>
+                    </button>
+                    <div data-pg-marquee id="deals-strip" data-pg-marquee-axis="y" style="--pg-marquee: step; --pg-marquee-direction: up">
+                        <div data-pg-marquee-track>
+                            <ul data-pg-marquee-list>
+                                <li><a href="#">Early holiday deals — up to $100 off</a></li>
+                                <li>Keyboards from $49 — <a href="#">shop now</a></li>
+                                <li>Two mice for the price of one — <a href="#">see</a></li>
+                                <li>Gift cards, delivered in a minute</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <button type="button" data-pg-marquee-next aria-controls="deals-strip" aria-label="The next deal">
+                        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5" /></svg>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3 · Logos -->
+            <section>
+                <p class="label">3 · Logos — two rows, the opposite ways</p>
+                <h2>The edges fade: <code>--pg-marquee-fade</code></h2>
+                <p>
+                    One row left, the other right (<code>--pg-marquee-direction: right</code>); the edges fade out
+                    over 6rem. Each list is as long as it is: the window is filled with as many copies as it needs.
+                </p>
+                <div class="logos">
+                    <div data-pg-marquee>
+                        <div data-pg-marquee-track>
+                            <ul data-pg-marquee-list>
+                                <li>northwind</li>
+                                <li>Halcyon</li>
+                                <li>Orbit</li>
+                                <li>quarry</li>
+                                <li>Lumen</li>
+                                <li>Vela</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div data-pg-marquee class="reverse">
+                        <div data-pg-marquee-track>
+                            <ul data-pg-marquee-list>
+                                <li>Saltmarsh</li>
+                                <li>Kestrel</li>
+                                <li>Pine</li>
+                                <li>arcadia</li>
+                                <li>Tessel</li>
+                                <li>Fold</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 4 · Testimonials -->
+            <section>
+                <p class="label">4 · Columns — testimonials going up and down</p>
+                <h2>Up or down: a column with a height of its own</h2>
+                <p>
+                    <code>--pg-marquee-direction: up</code> or <code>down</code>, each column its own speed. Going up
+                    or down the window needs a height, the site's — here 28rem — and is best written with
+                    <code>data-pg-marquee-axis="y"</code> already, so it is a column from the first paint. Below
+                    48rem, one column.
+                </p>
+                <div class="columns">
+                    <div data-pg-marquee class="up" data-pg-marquee-axis="y">
+                        <div data-pg-marquee-track>
+                            <div data-pg-marquee-list>
+                                <figure class="card"><blockquote>Delivered the next morning, exactly as pictured. Ordering again.</blockquote><footer><span class="avatar">AK</span><span><b>Ayla K.</b><small>Istanbul</small></span></footer></figure>
+                                <figure class="card"><blockquote>The size guide was right. First time a jacket fits me from the box.</blockquote><footer><span class="avatar">MD</span><span><b>Mert D.</b><small>Izmir</small></span></footer></figure>
+                                <figure class="card"><blockquote>Returned a pair of shoes in two days, no questions. Money back the same week.</blockquote><footer><span class="avatar">SL</span><span><b>Sara L.</b><small>Ankara</small></span></footer></figure>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-pg-marquee class="down" data-pg-marquee-axis="y">
+                        <div data-pg-marquee-track>
+                            <div data-pg-marquee-list>
+                                <figure class="card"><blockquote>Wrapped as a gift without my asking. Lovely touch.</blockquote><footer><span class="avatar">EB</span><span><b>Emre B.</b><small>Bursa</small></span></footer></figure>
+                                <figure class="card"><blockquote>Support answered on a Sunday evening. Problem solved in ten minutes.</blockquote><footer><span class="avatar">ZT</span><span><b>Zeynep T.</b><small>Antalya</small></span></footer></figure>
+                                <figure class="card"><blockquote>Better quality than the shops in town, for less.</blockquote><footer><span class="avatar">CY</span><span><b>Can Y.</b><small>Eskişehir</small></span></footer></figure>
+                            </div>
+                        </div>
+                    </div>
+                    <div data-pg-marquee class="up" data-pg-marquee-axis="y" style="--pg-marquee-speed: 38">
+                        <div data-pg-marquee-track>
+                            <div data-pg-marquee-list>
+                                <figure class="card"><blockquote>The colours are just as on the screen. Rare.</blockquote><footer><span class="avatar">DN</span><span><b>Deniz N.</b><small>Trabzon</small></span></footer></figure>
+                                <figure class="card"><blockquote>Paid in instalments, no fuss. Arrived before the weekend.</blockquote><footer><span class="avatar">HS</span><span><b>Hakan S.</b><small>Konya</small></span></footer></figure>
+                                <figure class="card"><blockquote>Third order this year. Never a wrong item.</blockquote><footer><span class="avatar">IP</span><span><b>Irem P.</b><small>Adana</small></span></footer></figure>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5 · Only when it does not fit -->
+            <section>
+                <p class="label">5 · Overflow — only when it does not fit</p>
+                <h2>A long title moves, a short one stands still</h2>
+                <p>
+                    <code>--pg-marquee: overflow</code>: while the list fits the window it stands still, with no
+                    copies (<code>data-pg-marquee-fits</code>); when it does not, it flows. Narrow the window: more
+                    titles start to move.
+                </p>
+                <div class="products">
+                    <article class="product">
+                        <div class="picture"></div>
+                        <div class="text">
+                            <div data-pg-marquee><div data-pg-marquee-track><p data-pg-marquee-list><span>Wool scarf</span></p></div></div>
+                            <p class="price">$39</p>
+                        </div>
+                    </article>
+                    <article class="product">
+                        <div class="picture"></div>
+                        <div class="text">
+                            <div data-pg-marquee><div data-pg-marquee-track><p data-pg-marquee-list><span>Waterproof hiking boots with a cushioned sole, men's, wide fit</span></p></div></div>
+                            <p class="price">$129</p>
+                        </div>
+                    </article>
+                    <article class="product">
+                        <div class="picture"></div>
+                        <div class="text">
+                            <div data-pg-marquee><div data-pg-marquee-track><p data-pg-marquee-list><span>Linen shirt, relaxed</span></p></div></div>
+                            <p class="price">$58</p>
+                        </div>
+                    </article>
+                    <article class="product">
+                        <div class="picture"></div>
+                        <div class="text">
+                            <div data-pg-marquee><div data-pg-marquee-track><p data-pg-marquee-list><span>Ceramic pour-over coffee set with two cups and a stand</span></p></div></div>
+                            <p class="price">$74</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 6 · With the page's scroll -->
+            <section>
+                <p class="label">6 · With the page's scroll — two bands crossing</p>
+                <h2>Faster as the page goes down, turning back as it goes up</h2>
+                <p>
+                    <code>--pg-marquee-scroll</code>: the page's scroll speed, px a second, times this number, is
+                    added to the flow — scroll down hard and the bands race, scroll up and they turn back.
+                    <code>--pg-marquee-turn: keep</code>: having turned, they keep that way until the page goes down
+                    again. No GSAP: the package reads the scroll itself, Lenis or not. The bands are plain CSS,
+                    rotated.
+                </p>
+                <div class="switches">
+                    <div class="row">
+                        <span>The page's scroll</span>
+                        <a data-key="scroll" data-value="" href="?">adds 0.2×</a>
+                        <a data-key="scroll" data-value="0.5" href="?">0.5×</a>
+                        <a data-key="scroll" data-value="0" href="?">nothing</a>
+                    </div>
+                    <div class="row">
+                        <span>Having turned</span>
+                        <a data-key="turn" data-value="" href="?">turns back again</a>
+                        <a data-key="turn" data-value="keep" href="?">keeps that way</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="crossing">
+            <div data-pg-marquee class="band one">
+                <div data-pg-marquee-track>
+                    <ul data-pg-marquee-list>
+                        <li>New season</li>
+                        <li>Free delivery</li>
+                        <li>30% off</li>
+                    </ul>
+                </div>
+            </div>
+            <div data-pg-marquee class="band two">
+                <div data-pg-marquee-track>
+                    <ul data-pg-marquee-list>
+                        <li>Made to last</li>
+                        <li>Returns in 60 days</li>
+                        <li>Gift wrapped</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <main>
+            <section>
+                <h2>Reduced motion</h2>
+                <p>
+                    With reduced motion asked for, every strip stands still, with no copies — the first items, as
+                    written. Out of sight, a strip stops, and goes on where it was when it comes back.
+                </p>
+            </section>
+            <div class="tall"></div>
+        </main>
+
+        <!-- The switches, written onto the strips before anything measures
+             them: the settings are CSS, so they are style properties here. -->
+        <script>
+            (function (query) {
+                var set = function (el, name, value) {
+                    el.style.setProperty(name, value);
+                };
+                var promo = document.getElementById("promo");
+                if (query.get("speed")) set(promo, "--pg-marquee-speed", query.get("speed"));
+                if (query.get("dir") === "right") set(promo, "--pg-marquee-direction", "right");
+                if (query.get("hover")) set(promo, "--pg-marquee-hover", query.get("hover"));
+                if (query.get("fade")) set(promo, "--pg-marquee-fade", query.get("fade") + "rem");
+                if (query.get("phone") === "still") promo.classList.add("phone-still");
+
+                var deals = document.getElementById("deals-strip");
+                if (query.get("steps") === "left") {
+                    set(deals, "--pg-marquee-direction", "left");
+                    deals.setAttribute("data-pg-marquee-axis", "x");
+                }
+                if (query.get("hold")) set(deals, "--pg-marquee-hold", query.get("hold") + "s");
+
+                var scroll = query.has("scroll") ? query.get("scroll") : "0.2";
+                document.querySelectorAll(".band").forEach(function (band) {
+                    set(band, "--pg-marquee-scroll", scroll);
+                    if (query.get("turn") === "keep") set(band, "--pg-marquee-turn", "keep");
+                });
+            })(new URLSearchParams(location.search));
+        </script>
+
+        <script type="module">
+            import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.0.0/dist/index.js";
+
+            const query = new URLSearchParams(location.search);
+
+            // ?lenis: the page's scroll is Lenis's — the bands follow it the
+            // same: the package reads the page's scroll position.
+            if (query.has("lenis")) {
+                const { default: Lenis } = await import("https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.mjs");
+                new Lenis({ autoRaf: true });
+            }
+
+            initMarquee();
+
+            // The switches: each link keeps the others; the one in use is
+            // marked.
+            const link = (key, value) => {
+                const next = new URLSearchParams(query);
+                if (value === "") next.delete(key);
+                else next.set(key, value);
+                const s = next.toString().replace(/=(&|$)/g, "$1");
+                return s ? `?${s}` : location.pathname;
+            };
+            document.querySelectorAll("[data-key]").forEach((a) => {
+                const key = a.dataset.key;
+                const value = a.dataset.value;
+                a.href = link(key, value);
+                const now = query.has(key) ? query.get(key) : "";
+                if (now === value) a.setAttribute("aria-current", "true");
+            });
+            document.getElementById("lenis-off").href = link("lenis", "");
+            document.getElementById("lenis-on").href = `?${new URLSearchParams([...query, ["lenis", ""]]).toString().replace(/=(&|$)/g, "$1")}`;
+            document.getElementById(query.has("lenis") ? "lenis-on" : "lenis-off").setAttribute("aria-current", "true");
+        </script>
+    </body>
+</html>
