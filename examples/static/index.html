@@ -178,7 +178,9 @@
             }
 
             /* 2 · One at a time: each message the bar's own size, one after
-               another, held. Going up, the bar needs its height. */
+               another, held — going up, the bar's height; going left, its
+               width: 100cqw, the window being a size container. Going up,
+               the bar needs its height. */
             .deals {
                 display: flex;
                 align-items: center;
@@ -193,6 +195,7 @@
                 min-width: 0;
                 height: 2.75rem;
                 --pg-marquee-gap: 0px;
+                container-type: inline-size;
             }
             .deals li {
                 display: flex;
@@ -204,7 +207,7 @@
                 white-space: nowrap;
             }
             .deals [data-pg-marquee-axis="x"] li {
-                width: var(--deals-width, 30rem);
+                width: 100cqw;
             }
             .deals [data-pg-marquee-list] {
                 width: 100%;

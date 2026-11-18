@@ -75,8 +75,10 @@ on.
 
 Each item comes into the window's start, stays, and the next takes its
 place: deals in a top bar one at a time, going up, each the bar's own
-height — or side by side, going left. After the last, the first again,
-from the same side. Under the mouse, or with focus inside, it waits.
+height — or going left, each the bar's own width. After the last, the
+first again, from the same side. An item the window's own size: going up,
+its height; going left, `width: 100cqw` with `container-type: inline-size`
+on the window. Under the mouse, or with focus inside, it waits.
 `data-pg-marquee-next` and `-prev` buttons move it at once.
 
 ### Overflow
