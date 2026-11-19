@@ -31,10 +31,12 @@ type Vars = CSSProperties & Record<`--pg-marquee${string}`, string | number>;
  * the last too — joins the list and its copies with the same mark; put it
  * in the stylesheet: .bar li::after { content: "✦"; margin-left: 2rem }.
  */
-export function AnnouncementBar({ items }: { items: React.ReactNode[] }) {
+export function AnnouncementBar({ items, paused = false }: { items: React.ReactNode[]; paused?: boolean }) {
+    // paused: stopped from React — data-pg-marquee-paused written or taken
+    // away; its toggle shows it. The toggle and pauseMarquee() write the same.
     return (
         <div className="bar" style={{ display: "flex", alignItems: "center" }}>
-            <div data-pg-marquee id="promo" style={{ flex: "1 1 0%", minWidth: 0 }}>
+            <div data-pg-marquee id="promo" data-pg-marquee-paused={paused ? "" : undefined} style={{ flex: "1 1 0%", minWidth: 0 }}>
                 <div data-pg-marquee-track>
                     <ul data-pg-marquee-list>
                         {items.map((item, i) => (
@@ -83,10 +85,11 @@ export function DealsBar({ deals }: { deals: React.ReactNode[] }) {
     );
 }
 
-/* Logos, two rows the opposite ways, the edges fading. */
+/* Logos, two rows the opposite ways, the edges fading — dragged by hand:
+   a finger or the mouse takes hold, and let go they are thrown on. */
 export function LogoRows({ top, bottom }: { top: string[]; bottom: string[] }) {
     const row = (names: string[], direction: "left" | "right") => (
-        <div data-pg-marquee style={{ "--pg-marquee-direction": direction, "--pg-marquee-fade": "6rem", "--pg-marquee-gap": "3.5rem", "--pg-marquee-speed": 40 } as Vars}>
+        <div data-pg-marquee style={{ "--pg-marquee-direction": direction, "--pg-marquee-fade": "6rem", "--pg-marquee-gap": "3.5rem", "--pg-marquee-speed": 40, "--pg-marquee-drag": "on" } as Vars}>
             <div data-pg-marquee-track>
                 <ul data-pg-marquee-list>
                     {names.map((name) => (

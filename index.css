@@ -8,7 +8,8 @@
  *                       copies — one gap all the way round (default 2rem)
  *   --pg-marquee-fade   how far the edges fade out (default 0: no fade)
  * The rest — --pg-marquee, -direction, -speed, -hold, -duration, -easing,
- * -hover, -scroll, -turn — index.ts reads; see there or the README.
+ * -hover, -scroll, -turn, -drag, -press — index.ts reads; see there or the
+ * README.
  */
 
 /* The window: what shows. Its width comes from its place, never from what
@@ -57,4 +58,19 @@
 [data-pg-marquee-axis="y"] [data-pg-marquee-track] {
     width: auto;
     height: max-content;
+}
+
+/* Dragged by hand (--pg-marquee-drag: on): a hand to hold it by; a finger
+   going along it moves it, going across it scrolls the page. While it is
+   dragged nothing is selected. */
+[data-pg-marquee-drag] {
+    cursor: grab;
+    touch-action: pan-y;
+}
+[data-pg-marquee-drag][data-pg-marquee-axis="y"] {
+    touch-action: pan-x;
+}
+[data-pg-marquee-dragging] {
+    cursor: grabbing;
+    user-select: none;
 }

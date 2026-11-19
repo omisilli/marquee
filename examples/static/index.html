@@ -2,7 +2,8 @@
 <!-- Open by double-clicking: everything loads from jsDelivr, pinned to a
      release, so the page and the code always match. Each section shows one
      side of the package; the switches are links, and each keeps the
-     others: ?speed, ?dir, ?hover, ?fade, ?phone (the bar); ?hold, ?steps
+     others: ?speed, ?dir, ?hover, ?fade, ?phone, ?press (the bar); ?drag
+     (logos, testimonials, deals); ?hold, ?steps
      (one at a time); ?group (the columns); ?scroll, ?turn (with the page's
      scroll); ?lenis. -->
 <html lang="en">
@@ -10,7 +11,7 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>marquee — example</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/index.css" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/index.css" />
         <style>
             :root {
                 --bg: #f6f6f4;
@@ -495,6 +496,16 @@
                         <a data-key="phone" data-value="" href="?">flows</a>
                         <a data-key="phone" data-value="still" href="?">still (--pg-marquee: none)</a>
                     </div>
+                    <div class="row">
+                        <span>Held down</span>
+                        <a data-key="press" data-value="" href="?">stands still</a>
+                        <a data-key="press" data-value="none" href="?">goes on</a>
+                    </div>
+                    <div class="row">
+                        <span>From code</span>
+                        <button type="button" id="code-pause"><code>pauseMarquee("promo")</code></button>
+                        <button type="button" id="code-play"><code>playMarquee("promo")</code></button>
+                    </div>
                 </div>
                 <div class="bar">
                     <div data-pg-marquee id="promo">
@@ -565,6 +576,19 @@
                     One row left, the other right (<code>--pg-marquee-direction: right</code>); the edges fade out
                     over 6rem. Each list is as long as it is: the window is filled with as many copies as it needs.
                 </p>
+                <p>
+                    <code>--pg-marquee-drag: on</code>: grab a row — a finger or the mouse — and drag it along; let go
+                    and it is thrown on, easing back to its own speed. A finger going across it still scrolls the
+                    page. The switch drags the logos, the testimonials below and the deals above (a swipe there is
+                    the next deal, or the one before).
+                </p>
+                <div class="switches">
+                    <div class="row">
+                        <span>By hand</span>
+                        <a data-key="drag" data-value="" href="?">no</a>
+                        <a data-key="drag" data-value="on" href="?">drag it (--pg-marquee-drag: on)</a>
+                    </div>
+                </div>
                 <div class="logos">
                     <div data-pg-marquee>
                         <div data-pg-marquee-track>
@@ -769,6 +793,13 @@
                 if (query.get("hold")) set(deals, "--pg-marquee-hold", query.get("hold") + "s");
                 if (query.get("group") === "on") document.getElementById("testimonials").setAttribute("data-pg-marquee-group", "");
 
+                if (query.get("press") === "none") set(promo, "--pg-marquee-press", "none");
+                if (query.get("drag") === "on") {
+                    document.querySelectorAll(".logos, .columns, #deals-strip").forEach(function (el) {
+                        set(el, "--pg-marquee-drag", "on");
+                    });
+                }
+
                 var scroll = query.has("scroll") ? query.get("scroll") : "0.2";
                 document.querySelectorAll(".band").forEach(function (band) {
                     set(band, "--pg-marquee-scroll", scroll);
@@ -778,7 +809,7 @@
         </script>
 
         <script type="module">
-            import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/dist/index.js";
+            import { initMarquee, pauseMarquee, playMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/dist/index.js";
 
             const query = new URLSearchParams(location.search);
 
@@ -790,6 +821,11 @@
             }
 
             initMarquee();
+
+            // From code: the same as the stop button — data-pg-marquee-paused
+            // on the window, and the button shows it.
+            document.getElementById("code-pause").addEventListener("click", () => pauseMarquee("promo"));
+            document.getElementById("code-play").addEventListener("click", () => playMarquee("promo"));
 
             // The switches: each link keeps the others; the one in use is
             // marked.

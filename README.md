@@ -8,22 +8,25 @@ times as the window needs, and moves it by one list's length, round and
 round. No dependencies.
 
 ```sh
-npm install github:omisilli/marquee#v1.1.0
+npm install github:omisilli/marquee#v1.2.0
 ```
 
 ```ts
-import { initMarquee } from "@plusguard/marquee";
+import { initMarquee, pauseMarquee, playMarquee } from "@plusguard/marquee";
 import "@plusguard/marquee/index.css";
 
 initMarquee(); // every marquee on the page, those rendered later too
+
+// stopped and started from code, by window, group or id:
+// pauseMarquee("promo"); playMarquee("promo");
 ```
 
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/index.css" />
 <script type="module">
-    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.1.0/dist/index.js";
+    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/dist/index.js";
     initMarquee();
 </script>
 ```
@@ -105,8 +108,22 @@ of its own — the site's — and is best written with
 `data-pg-marquee-axis="y"` in the markup, so it is a column from the first
 paint, before the script has looked.
 
+### By hand
+
+`--pg-marquee-drag: on`: a finger or the mouse takes hold of it and drags
+it along; let go and it is thrown on at the pointer's speed, easing back
+to its own. A finger going along it moves it; going across it scrolls the
+page (`touch-action`, written by `index.css`). In step, a swipe is the next
+item or the one before. A press that moved is a drag: the click it ends
+with goes nowhere — a link under the finger is not followed — while a
+plain click on a link still is.
+
 ## Stopping
 
+- **Held down it stands still** — a finger, a pen or a mouse button
+  (`--pg-marquee-press: pause`, the default; `none` to leave it going). A
+  phone has no hover: this is its pause. Let go, it goes on; a finger that
+  goes on to scroll the page lets go too.
 - **Focus inside stops it** — Tab to a link in it and it stands still, to
   be read and pressed; out again, it goes on.
 - **A group stops together:** `data-pg-marquee-group` on what holds several
@@ -118,6 +135,9 @@ paint, before the script has looked.
   naming the window. It gets `aria-pressed="true"` while stopped, the
   window `data-pg-marquee-paused`. Anything moving for more than five
   seconds should have one (WCAG 2.2.2).
+- **From code:** `data-pg-marquee-paused` on the window, written or taken
+  away at any time — a React prop does it — or `pauseMarquee(el)` and
+  `playMarquee(el)` with a window, a group, or an id. Its toggles show it.
 - **Out of sight it stops**, and goes on where it was when it comes back.
 - **Reduced motion:** every strip stands still, no copies.
 
@@ -138,6 +158,8 @@ Set on the window or above, per screen size with media queries:
 | `--pg-marquee-easing` | `ease-in-out` | Step: any CSS easing |
 | `--pg-marquee-scroll` | `0` | The page's scroll speed times this, added to the flow |
 | `--pg-marquee-turn` | `none` | `keep`: turned back by the page going up, it stays turned |
+| `--pg-marquee-drag` | `none` | `on`: dragged by a finger or the mouse, thrown on when let go; step: swiped |
+| `--pg-marquee-press` | `pause` | Held down, it stands still · `none`: it goes on |
 
 The window clips and is `contain: inline-size`: its width comes from its
 place — a flex or grid parent, a card — never from what moves inside it.
@@ -159,7 +181,9 @@ contained: it takes its height from the site.
 | `data-pg-marquee-axis` | the window | `x` or `y` — written by the script; write `y` in the markup for a column |
 | `data-pg-marquee-copy` | the copies | Written by the script: `aria-hidden`, out of the Tab order, no ids — the mouse can press their links |
 | `data-pg-marquee-fits` | the window | Overflow: the list fits — still |
-| `data-pg-marquee-paused` | the window | Stopped by its button |
+| `data-pg-marquee-paused` | the window | Stopped — by its button, or written by the site, any time |
+| `data-pg-marquee-drag` | the window | Written by the script: it can be dragged |
+| `data-pg-marquee-dragging` | the window | Written by the script: being dragged now |
 | `data-pg-marquee-ready` | the window | The script has looked |
 
 ## React (Next)
@@ -193,8 +217,9 @@ only the newest call answers. See
 
 [`examples/static/index.html`](examples/static/index.html) — an
 announcement bar with its stop button (`?speed`, `?dir`, `?hover`,
-`?fade`, `?phone=still`), deals one at a time with arrows (`?steps=left`,
-`?hold`), two rows of logos the opposite ways, testimonials in columns
+`?fade`, `?phone=still`, `?press=none`) and stopped from code, deals one at a time with arrows (`?steps=left`,
+`?hold`), two rows of logos the opposite ways — dragged by hand with `?drag=on`, the
+testimonials and the deals too — testimonials in columns
 going up and down — one at a time or all three together (`?group=on`),
 each card with a link — product titles that move only when they do not fit,
 and two bands crossing that race with the page's scroll (`?scroll`,
