@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, type CSSProperties } from "react";
-import { initMarquee } from "@plusguard/marquee";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { initMarquee, pauseMarquee, playMarquee } from "@plusguard/marquee";
 import "@plusguard/marquee/index.css";
 
 /*
@@ -151,35 +151,86 @@ export function TestimonialColumns({ columns }: { columns: { text: string; name:
     );
 }
 
-/* Review cards in a row beside the score. Each product picture in its box
-   the house way (pg-imageGroup): the box has the height and the shape, the
-   picture fills it — no baseline gap, no box stretched by the picture. */
-export function ReviewRow({ reviews }: { reviews: { title?: string; text: string; name: string; product: string; href: string; picture: string }[] }) {
+/* Review cards in a row beside the score. A long review ends with … after
+   four lines (the stylesheet's line-clamp) and its Read more opens the
+   whole of it in a dialog; the row stands still while it is open. Each
+   product picture in its box the house way (pg-imageGroup): the box has the
+   height and the shape, the picture fills it. */
+type Review = { title?: string; text: string; name: string; product: string; href: string; picture: string; long?: boolean };
+
+function ReviewCard({ review, onMore }: { review: Review; onMore?: () => void }) {
     return (
-        <div data-pg-marquee style={{ "--pg-marquee-gap": "1rem", "--pg-marquee-fade": "3rem", "--pg-marquee-speed": 30 } as Vars}>
-            <div data-pg-marquee-track>
-                <div data-pg-marquee-list>
-                    {reviews.map((r) => (
-                        <figure key={r.name} className="review">
-                            <span className="stars" aria-label="5 out of 5">
-                                ★★★★★
-                            </span>
-                            {r.title && <p className="review-title">{r.title}</p>}
-                            <blockquote>{r.text}</blockquote>
-                            <b>{r.name}</b>
-                            <a className="review-product" href={r.href}>
-                                <span className="pg-imageGroup" style={{ height: "2.75rem", aspectRatio: "1" }}>
-                                    <img src={r.picture} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                </span>
-                                <span>
-                                    <small>Bought</small> {r.product}
-                                </span>
-                            </a>
-                        </figure>
-                    ))}
+        <figure className="review">
+            <span className="stars" aria-label="5 out of 5">
+                ★★★★★
+            </span>
+            {review.title && <p className="review-title">{review.title}</p>}
+            <blockquote>{review.text}</blockquote>
+            {review.long && onMore && (
+                <button type="button" className="review-more" onClick={onMore}>
+                    Read more
+                </button>
+            )}
+            <b>{review.name}</b>
+            <a className="review-product" href={review.href}>
+                <span className="pg-imageGroup" style={{ height: "2.75rem", aspectRatio: "1" }}>
+                    <img src={review.picture} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </span>
+                <span>
+                    <small>Bought</small> {review.product}
+                </span>
+            </a>
+        </figure>
+    );
+}
+
+export function ReviewRow({ reviews }: { reviews: Review[] }) {
+    const row = useRef<HTMLDivElement>(null);
+    const dialog = useRef<HTMLDialogElement>(null);
+    const [open, setOpen] = useState<Review | null>(null);
+
+    // The copies are the package's clones: a Read more in one is pressed
+    // like the list's, so the card is found by its place in the list.
+    const more = (event: React.MouseEvent) => {
+        const button = (event.target as Element).closest(".review-more");
+        const card = button?.closest(".review");
+        const list = card?.parentElement;
+        if (!card || !list) return;
+        setOpen(reviews[[...list.children].indexOf(card)] ?? null);
+    };
+    useEffect(() => {
+        if (!open || !row.current) return;
+        pauseMarquee(row.current);
+        dialog.current?.showModal();
+    }, [open]);
+
+    return (
+        <>
+            <div ref={row} data-pg-marquee onClick={more} style={{ "--pg-marquee-gap": "1rem", "--pg-marquee-fade": "3rem", "--pg-marquee-speed": 30 } as Vars}>
+                <div data-pg-marquee-track>
+                    <div data-pg-marquee-list>
+                        {reviews.map((r) => (
+                            <ReviewCard key={r.name} review={r} onMore={() => {}} />
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
+            <dialog
+                ref={dialog}
+                className="review-dialog"
+                aria-label="A review"
+                onClose={() => {
+                    setOpen(null);
+                    if (row.current) playMarquee(row.current);
+                }}
+                onClick={(event) => event.target === dialog.current && dialog.current?.close()}
+            >
+                <button type="button" className="review-close" aria-label="Close" onClick={() => dialog.current?.close()}>
+                    ×
+                </button>
+                {open && <ReviewCard review={{ ...open, long: false }} />}
+            </dialog>
+        </>
     );
 }
 

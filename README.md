@@ -8,7 +8,7 @@ times as the window needs, and moves it by one list's length, round and
 round. No dependencies.
 
 ```sh
-npm install github:omisilli/marquee#v1.2.0
+npm install github:omisilli/marquee#v1.2.1
 ```
 
 ```ts
@@ -24,9 +24,9 @@ initMarquee(); // every marquee on the page, those rendered later too
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.1/index.css" />
 <script type="module">
-    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.0/dist/index.js";
+    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.1/dist/index.js";
     initMarquee();
 </script>
 ```
@@ -124,8 +124,11 @@ plain click on a link still is.
   (`--pg-marquee-press: pause`, the default; `none` to leave it going). A
   phone has no hover: this is its pause. Let go, it goes on; a finger that
   goes on to scroll the page lets go too.
-- **Focus inside stops it** — Tab to a link in it and it stands still, to
-  be read and pressed; out again, it goes on.
+- **Keyboard focus inside stops it** — Tab to a link in it and it stands
+  still, to be read and pressed; out again, it goes on. Focus a mouse press
+  leaves behind (`:focus-visible` not matching) does not hold it: the mouse
+  has hover for that, and a button pressed would otherwise keep it still
+  after the mouse has gone.
 - **A group stops together:** `data-pg-marquee-group` on what holds several
   — three columns of testimonials — and the mouse anywhere over it, or
   focus in it, stops every marquee inside, not just the one under the

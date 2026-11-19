@@ -50,8 +50,9 @@
  *                           its pause
  *   --pg-marquee-gap, --pg-marquee-fade — index.css's.
  *
- * Focus inside it always stops it, so a link can be read and pressed. Out
- * of sight it stops, and goes on where it was.
+ * Keyboard focus inside it (:focus-visible) stops it, so a link can be
+ * read and pressed; a mouse press is the hover's. Out of sight it stops,
+ * and goes on where it was.
  *
  * data-pg-marquee-group on any parent: the mouse over it, or focus in it,
  * stops every marquee inside — columns of testimonials stand still
@@ -529,8 +530,19 @@ export function initMarquee() {
     const onFocus = () => {
         if (live !== self)
             return;
+        // Keyboard focus — :focus-visible: a press with the mouse is the
+        // mouse's, and hover has that; a button pressed and still focused
+        // would hold it still after the mouse has gone.
+        const active = document.activeElement;
+        let visible = false;
+        try {
+            visible = !!active && active.matches(":focus-visible");
+        }
+        catch {
+            visible = true;
+        }
         marquees.forEach((m) => {
-            const focused = reach(m).contains(document.activeElement);
+            const focused = visible && reach(m).contains(active);
             if (focused === m.focused)
                 return;
             m.focused = focused;
