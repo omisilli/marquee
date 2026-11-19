@@ -357,6 +357,156 @@
                 }
             }
 
+            /* 4 · Reviews beside a headline: the same strip, sideways —
+               cards side by side, the edges fading. */
+            .reviews {
+                display: grid;
+                grid-template-columns: minmax(15rem, 21rem) minmax(0, 1fr);
+                gap: 2.5rem;
+                align-items: center;
+                padding: 2.5rem;
+                border-radius: 1.5rem;
+                background: color-mix(in srgb, var(--red) 4%, var(--surface));
+            }
+            .reviews h3 {
+                font-size: clamp(1.6rem, 3vw, 2.2rem);
+                line-height: 1.1;
+                letter-spacing: -0.02em;
+                margin-bottom: 0.75rem;
+            }
+            .reviews-lead {
+                color: var(--muted);
+                margin-bottom: 1.5rem;
+            }
+            .reviews-score {
+                padding: 1.25rem 1.5rem;
+                border-radius: 1rem;
+                background: var(--fg);
+                color: var(--bg);
+            }
+            .reviews-score b {
+                display: block;
+                font-size: 2.6rem;
+                line-height: 1;
+                letter-spacing: -0.03em;
+            }
+            .stars {
+                color: #f5a623;
+                letter-spacing: 0.1em;
+            }
+            .reviews-score .stars {
+                display: block;
+                margin: 0.5rem 0 0.25rem;
+                font-size: 1.1rem;
+            }
+            .reviews-score small {
+                opacity: 0.75;
+            }
+            .reviews [data-pg-marquee] {
+                --pg-marquee-gap: 1rem;
+                --pg-marquee-fade: 3rem;
+                --pg-marquee-speed: 30;
+            }
+            .review {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+                width: 21rem;
+                padding: 1.25rem;
+                border: 1px solid var(--line);
+                border-radius: 1.25rem;
+                background: var(--surface);
+                font-size: 0.9rem;
+            }
+            .review-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .review-quote {
+                font:
+                    700 2.5rem/0.5 Georgia,
+                    serif;
+                color: color-mix(in srgb, var(--fg) 15%, transparent);
+            }
+            .review-title {
+                font-weight: 700;
+            }
+            .review blockquote {
+                color: var(--muted);
+                flex: 1;
+            }
+            .review-who {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid var(--line);
+            }
+            .badge {
+                padding: 0.15rem 0.6rem;
+                border-radius: 999px;
+                background: color-mix(in srgb, var(--red) 10%, var(--surface));
+                color: var(--red);
+                font-size: 0.75rem;
+                font-weight: 600;
+            }
+            .review-product {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                text-decoration: none;
+            }
+            .review-product small {
+                display: block;
+                color: var(--muted);
+                font-size: 0.75rem;
+            }
+            .review-product b {
+                font-size: 0.85rem;
+            }
+            .review-product .arrow {
+                margin-left: auto;
+                color: var(--red);
+            }
+            /* The product's picture: in its box, the house way — the box
+               has the height and the shape (aspect-ratio), the picture fills
+               it; an SVG in its box takes the height. */
+            .pg-imageGroup {
+                width: auto;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                overflow: hidden;
+            }
+            .review-product .pg-imageGroup {
+                flex: none;
+                height: 2.75rem;
+                aspect-ratio: 1;
+                border-radius: 0.6rem;
+                background: color-mix(in srgb, var(--fg) 6%, var(--surface));
+            }
+            .review-product .pg-imageGroup svg {
+                width: auto;
+                height: 1.4rem;
+                fill: none;
+                stroke: var(--muted);
+                stroke-width: 1.6;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+            @media (max-width: 47.99rem) {
+                .reviews {
+                    grid-template-columns: minmax(0, 1fr);
+                    padding: 1.5rem;
+                }
+                .review {
+                    width: 17rem;
+                }
+            }
+
             /* 5 · Only when it does not fit: product cards, the title in one
                line; a title that fits stands still. */
             .products {
@@ -671,6 +821,68 @@
                 </div>
             </section>
 
+            <!-- 4 · Reviews beside a headline -->
+            <section>
+                <p class="label">4 · Rows — reviews beside a headline</p>
+                <h2>The same, sideways: cards side by side</h2>
+                <p>
+                    A row of review cards beside the score, the edges fading. Under the mouse it stops, a card's
+                    product link can be pressed — in the copies too — and with <code>?drag=on</code> a finger throws
+                    it along. Each product picture sits in its box the house way (<code>pg-imageGroup</code>): the
+                    box has the height and the shape, the picture fills it.
+                </p>
+                <div class="reviews">
+                    <div>
+                        <h3>From our customers' tables</h3>
+                        <p class="reviews-lead">What people who ordered wrote, word for word.</p>
+                        <div class="reviews-score">
+                            <b>1,700+</b>
+                            <span class="stars" aria-hidden="true">★★★★★</span>
+                            <small>five-star reviews</small>
+                        </div>
+                    </div>
+                    <div data-pg-marquee>
+                        <div data-pg-marquee-track>
+                            <div data-pg-marquee-list>
+                                <figure class="review">
+                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                    <p class="review-title">Exactly as described</p>
+                                    <blockquote>The jacket arrived the next morning, folded in tissue paper. Fits as the size guide said it would.</blockquote>
+                                    <div class="review-who"><b>Ayla K.</b><span class="badge">✓ Verified order</span></div>
+                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool jacket, navy</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                </figure>
+                                <figure class="review">
+                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                    <blockquote>Ordered for my mother's birthday. It came gift-wrapped without my asking, with a handwritten card.</blockquote>
+                                    <div class="review-who"><b>Mert D.</b><span class="badge">✓ Verified order</span></div>
+                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Ceramic pour-over set</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                </figure>
+                                <figure class="review">
+                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                    <p class="review-title">Third order this year</p>
+                                    <blockquote>Never a wrong item, never a late one. The returns were just as easy when a size was off.</blockquote>
+                                    <div class="review-who"><b>Selin T.</b><span class="badge">✓ Regular customer</span></div>
+                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Linen shirt, relaxed</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                </figure>
+                                <figure class="review">
+                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                    <p class="review-title">Better than in the shop</p>
+                                    <blockquote>Same boots I tried on in town, for less, and they came before the weekend.</blockquote>
+                                    <div class="review-who"><b>Emre B.</b><span class="badge">✓ Verified order</span></div>
+                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Waterproof hiking boots</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                </figure>
+                                <figure class="review">
+                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                    <blockquote>Support answered on a Sunday evening and sorted the address in ten minutes.</blockquote>
+                                    <div class="review-who"><b>Zeynep A.</b><span class="badge">✓ Verified order</span></div>
+                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool scarf</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                </figure>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- 5 · Only when it does not fit -->
             <section>
                 <p class="label">5 · Overflow — only when it does not fit</p>
@@ -795,7 +1007,7 @@
 
                 if (query.get("press") === "none") set(promo, "--pg-marquee-press", "none");
                 if (query.get("drag") === "on") {
-                    document.querySelectorAll(".logos, .columns, #deals-strip").forEach(function (el) {
+                    document.querySelectorAll(".logos, .columns, .reviews, #deals-strip").forEach(function (el) {
                         set(el, "--pg-marquee-drag", "on");
                     });
                 }

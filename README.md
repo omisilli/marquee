@@ -218,9 +218,11 @@ only the newest call answers. See
 [`examples/static/index.html`](examples/static/index.html) — an
 announcement bar with its stop button (`?speed`, `?dir`, `?hover`,
 `?fade`, `?phone=still`, `?press=none`) and stopped from code, deals one at a time with arrows (`?steps=left`,
-`?hold`), two rows of logos the opposite ways — dragged by hand with `?drag=on`, the
-testimonials and the deals too — testimonials in columns
+`?hold`), two rows of logos the opposite ways, testimonials in columns
 going up and down — one at a time or all three together (`?group=on`),
-each card with a link — product titles that move only when they do not fit,
+each card with a link — review cards in a row beside a score, each product
+picture in its box (`pg-imageGroup`); the logos, testimonials, reviews and
+deals dragged by hand with `?drag=on`; product titles that move only when
+they do not fit,
 and two bands crossing that race with the page's scroll (`?scroll`,
 `?turn=keep`) — with the browser's own scroll or Lenis (`?lenis`).

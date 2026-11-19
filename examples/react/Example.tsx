@@ -151,6 +151,38 @@ export function TestimonialColumns({ columns }: { columns: { text: string; name:
     );
 }
 
+/* Review cards in a row beside the score. Each product picture in its box
+   the house way (pg-imageGroup): the box has the height and the shape, the
+   picture fills it — no baseline gap, no box stretched by the picture. */
+export function ReviewRow({ reviews }: { reviews: { title?: string; text: string; name: string; product: string; href: string; picture: string }[] }) {
+    return (
+        <div data-pg-marquee style={{ "--pg-marquee-gap": "1rem", "--pg-marquee-fade": "3rem", "--pg-marquee-speed": 30 } as Vars}>
+            <div data-pg-marquee-track>
+                <div data-pg-marquee-list>
+                    {reviews.map((r) => (
+                        <figure key={r.name} className="review">
+                            <span className="stars" aria-label="5 out of 5">
+                                ★★★★★
+                            </span>
+                            {r.title && <p className="review-title">{r.title}</p>}
+                            <blockquote>{r.text}</blockquote>
+                            <b>{r.name}</b>
+                            <a className="review-product" href={r.href}>
+                                <span className="pg-imageGroup" style={{ height: "2.75rem", aspectRatio: "1" }}>
+                                    <img src={r.picture} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                </span>
+                                <span>
+                                    <small>Bought</small> {r.product}
+                                </span>
+                            </a>
+                        </figure>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
 /* A product title in one line: still while it fits, flowing when not. */
 export function ProductTitle({ children }: { children: React.ReactNode }) {
     return (
