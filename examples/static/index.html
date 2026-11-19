@@ -361,12 +361,15 @@
                cards side by side, the edges fading. */
             .reviews {
                 display: grid;
-                grid-template-columns: minmax(15rem, 21rem) minmax(0, 1fr);
+                grid-template-columns: minmax(15rem, 19rem) minmax(0, 1fr);
                 gap: 2.5rem;
                 align-items: center;
-                padding: 2.5rem;
-                border-radius: 1.5rem;
-                background: color-mix(in srgb, var(--red) 4%, var(--surface));
+            }
+            /* Two rows, the opposite ways. */
+            .reviews-rows {
+                display: grid;
+                gap: 1rem;
+                min-width: 0;
             }
             .reviews h3 {
                 font-size: clamp(1.6rem, 3vw, 2.2rem);
@@ -407,6 +410,10 @@
                 --pg-marquee-fade: 3rem;
                 --pg-marquee-speed: 30;
             }
+            .reviews .reverse {
+                --pg-marquee-direction: right;
+                --pg-marquee-speed: 24;
+            }
             .review {
                 display: flex;
                 flex-direction: column;
@@ -432,9 +439,15 @@
             .review-title {
                 font-weight: 700;
             }
+            /* A long review ends with … after four lines. */
             .review blockquote {
                 color: var(--muted);
                 flex: 1;
+                display: -webkit-box;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 4;
+                line-clamp: 4;
+                overflow: hidden;
             }
             .review-who {
                 display: flex;
@@ -456,7 +469,26 @@
                 display: flex;
                 align-items: center;
                 gap: 0.75rem;
+                margin: -0.5rem;
+                padding: 0.5rem;
+                border-radius: 0.75rem;
                 text-decoration: none;
+                transition:
+                    background-color 0.2s,
+                    color 0.2s;
+            }
+            /* Under the mouse, or reached by Tab: the product's own colour. */
+            .review-product:hover,
+            .review-product:focus-visible {
+                background: color-mix(in srgb, var(--red) 8%, var(--surface));
+                color: var(--red);
+            }
+            .review-product:hover .arrow,
+            .review-product:focus-visible .arrow {
+                translate: 0.2rem 0;
+            }
+            .review-product .arrow {
+                transition: translate 0.2s;
             }
             .review-product small {
                 display: block;
@@ -500,7 +532,6 @@
             @media (max-width: 47.99rem) {
                 .reviews {
                     grid-template-columns: minmax(0, 1fr);
-                    padding: 1.5rem;
                 }
                 .review {
                     width: 17rem;
@@ -826,7 +857,8 @@
                 <p class="label">4 · Rows — reviews beside a headline</p>
                 <h2>The same, sideways: cards side by side</h2>
                 <p>
-                    A row of review cards beside the score, the edges fading. Under the mouse it stops, a card's
+                    Two rows of review cards beside the score, the opposite ways, the edges fading. A long review
+                    ends with … after four lines. Under the mouse it stops, a card's
                     product link can be pressed — in the copies too — and with <code>?drag=on</code> a finger throws
                     it along. Each product picture sits in its box the house way (<code>pg-imageGroup</code>): the
                     box has the height and the shape, the picture fills it.
@@ -841,42 +873,70 @@
                             <small>five-star reviews</small>
                         </div>
                     </div>
-                    <div data-pg-marquee>
-                        <div data-pg-marquee-track>
-                            <div data-pg-marquee-list>
-                                <figure class="review">
-                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
-                                    <p class="review-title">Exactly as described</p>
-                                    <blockquote>The jacket arrived the next morning, folded in tissue paper. Fits as the size guide said it would.</blockquote>
-                                    <div class="review-who"><b>Ayla K.</b><span class="badge">✓ Verified order</span></div>
-                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool jacket, navy</b></span><span class="arrow" aria-hidden="true">→</span></a>
-                                </figure>
-                                <figure class="review">
-                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
-                                    <blockquote>Ordered for my mother's birthday. It came gift-wrapped without my asking, with a handwritten card.</blockquote>
-                                    <div class="review-who"><b>Mert D.</b><span class="badge">✓ Verified order</span></div>
-                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Ceramic pour-over set</b></span><span class="arrow" aria-hidden="true">→</span></a>
-                                </figure>
-                                <figure class="review">
-                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
-                                    <p class="review-title">Third order this year</p>
-                                    <blockquote>Never a wrong item, never a late one. The returns were just as easy when a size was off.</blockquote>
-                                    <div class="review-who"><b>Selin T.</b><span class="badge">✓ Regular customer</span></div>
-                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Linen shirt, relaxed</b></span><span class="arrow" aria-hidden="true">→</span></a>
-                                </figure>
-                                <figure class="review">
-                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
-                                    <p class="review-title">Better than in the shop</p>
-                                    <blockquote>Same boots I tried on in town, for less, and they came before the weekend.</blockquote>
-                                    <div class="review-who"><b>Emre B.</b><span class="badge">✓ Verified order</span></div>
-                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Waterproof hiking boots</b></span><span class="arrow" aria-hidden="true">→</span></a>
-                                </figure>
-                                <figure class="review">
-                                    <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
-                                    <blockquote>Support answered on a Sunday evening and sorted the address in ten minutes.</blockquote>
-                                    <div class="review-who"><b>Zeynep A.</b><span class="badge">✓ Verified order</span></div>
-                                    <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool scarf</b></span><span class="arrow" aria-hidden="true">→</span></a>
-                                </figure>
+                    <div class="reviews-rows">
+                        <div data-pg-marquee>
+                            <div data-pg-marquee-track>
+                                <div data-pg-marquee-list>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <p class="review-title">Exactly as described</p>
+                                        <blockquote>The jacket arrived the next morning, folded in tissue paper. Fits as the size guide said it would.</blockquote>
+                                        <div class="review-who"><b>Ayla K.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool jacket, navy</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <blockquote>Ordered for my mother's birthday. It came gift-wrapped without my asking, with a handwritten card.</blockquote>
+                                        <div class="review-who"><b>Mert D.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Ceramic pour-over set</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <p class="review-title">Third order this year</p>
+                                        <blockquote>Never a wrong item, never a late one. The returns were just as easy when a size was off.</blockquote>
+                                        <div class="review-who"><b>Selin T.</b><span class="badge">✓ Regular customer</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Linen shirt, relaxed</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <p class="review-title">Worth every penny</p>
+                                        <blockquote>I was not sure about ordering a coat online, so I read every review first. It came two days later, the colour exactly as on the screen, the stitching neat, the buttons sewn on twice. I have worn it every day since the cold came, through rain and the wind by the sea, and it still looks new. My sister has ordered the same one in green.</blockquote>
+                                        <div class="review-who"><b>Deniz N.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool coat, camel</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                </div>
+                            </div>
+                        </div>
+                        <div data-pg-marquee class="reverse">
+                            <div data-pg-marquee-track>
+                                <div data-pg-marquee-list>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <p class="review-title">Better than in the shop</p>
+                                        <blockquote>Same boots I tried on in town, for less, and they came before the weekend.</blockquote>
+                                        <div class="review-who"><b>Emre B.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Waterproof hiking boots</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <blockquote>Support answered on a Sunday evening and sorted the address in ten minutes.</blockquote>
+                                        <div class="review-who"><b>Zeynep A.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Wool scarf</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <blockquote>Paid in instalments, no fuss. It arrived before the weekend.</blockquote>
+                                        <div class="review-who"><b>Hakan S.</b><span class="badge">✓ Verified order</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Leather backpack</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                    <figure class="review">
+                                        <div class="review-top"><span class="stars" aria-label="5 out of 5">★★★★★</span><span class="review-quote" aria-hidden="true">“</span></div>
+                                        <p class="review-title">Small shop, big care</p>
+                                        <blockquote>A note in the box thanking me for the order, in pen. Little things.</blockquote>
+                                        <div class="review-who"><b>Irem P.</b><span class="badge">✓ Regular customer</span></div>
+                                        <a class="review-product" href="https://www.google.com" target="_blank" rel="noopener"><span class="pg-imageGroup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7zM9 8a3 3 0 0 1 6 0" /></svg></span><span><small>Bought</small><b>Cotton throw</b></span><span class="arrow" aria-hidden="true">→</span></a>
+                                    </figure>
+                                </div>
                             </div>
                         </div>
                     </div>
