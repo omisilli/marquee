@@ -8,7 +8,7 @@ times as the window needs, and moves it by one list's length, round and
 round. No dependencies.
 
 ```sh
-npm install github:omisilli/marquee#v1.2.1
+npm install @plusguard/marquee
 ```
 
 ```ts
@@ -24,9 +24,9 @@ initMarquee(); // every marquee on the page, those rendered later too
 ### Without a build step
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.1/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@plusguard/marquee@1.2.2/index.css" />
 <script type="module">
-    import { initMarquee } from "https://cdn.jsdelivr.net/gh/omisilli/marquee@v1.2.1/dist/index.js";
+    import { initMarquee } from "https://cdn.jsdelivr.net/npm/@plusguard/marquee@1.2.2/dist/index.js";
     initMarquee();
 </script>
 ```
